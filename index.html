@@ -6,162 +6,168 @@
 <title>7rs Dark System</title>
 
 <style>
-body {#bgVideo {
+body {
+  margin: 0;
+  font-family: monospace;
+  background: black;
+  color: #00ff99;
+  text-align: center;
+  overflow: hidden;
+}
+
+/* 🎥 الفيديو خلفية */
+#bgVideo {
   position: fixed;
   right: 0;
   bottom: 0;
   min-width: 100%;
   min-height: 100%;
   z-index: -2;
-}
-    margin: 0;
-    font-family: monospace;
-    background: black;
-    color: #00ff99;
-    text-align: center;
-    overflow: hidden;
+  object-fit: cover;
+  filter: brightness(0.3);
 }
 
-/* canvas للخلفية */
+/* Matrix Canvas */
 canvas {
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: -1;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: -1;
+}
+
+/* المحتوى */
+.container {
+  margin-top: 120px;
 }
 
 /* العنوان */
 h1 {
-    margin-top: 80px;
-    font-size: 32px;
-    text-shadow: 0 0 15px #00ff99;
-    animation: glow 2s infinite alternate;
+  font-size: 32px;
+  text-shadow: 0 0 20px #00ff99;
+  animation: glow 2s infinite alternate;
 }
 
-@keyframes glow {
-    from { text-shadow: 0 0 5px #00ff99; }
-    to { text-shadow: 0 0 20px #00ff99; }
-}
-
-/* الصناديق */
+/* انبوت */
 input {
-    width: 80%;
-    max-width: 400px;
-    padding: 12px;
-    margin: 10px;
-    border: 2px solid #00ff99;
-    background: transparent;
-    color: #00ff99;
-    outline: none;
-    font-size: 16px;
-    box-shadow: 0 0 10px #00ff99;
+  padding: 12px;
+  width: 280px;
+  background: #000;
+  border: 2px solid #00ff99;
+  color: #00ff99;
+  margin: 10px;
+  box-shadow: 0 0 10px #00ff99;
 }
 
-/* الأزرار */
+/* أزرار */
 button {
-    padding: 12px 20px;
-    margin: 10px;
-    border: none;
-    background: #00ff99;
-    color: black;
-    font-weight: bold;
-    cursor: pointer;
-    transition: 0.3s;
-    box-shadow: 0 0 10px #00ff99;
+  padding: 10px 20px;
+  margin: 10px;
+  background: #00ff99;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  box-shadow: 0 0 15px #00ff99;
 }
 
-button:hover {
-    background: black;
-    color: #00ff99;
-    border: 1px solid #00ff99;
-    box-shadow: 0 0 20px #00ff99;
-}
-
-/* النتيجة */
-#result {
-    margin-top: 20px;
-    font-size: 18px;
+/* تأثير */
+@keyframes glow {
+  from { text-shadow: 0 0 10px #00ff99; }
+  to { text-shadow: 0 0 30px #00ff99; }
 }
 </style>
 </head>
 
 <body>
 
+<!-- 🎥 الفيديو -->
+<video autoplay muted loop playsinline id="bgVideo">
+  <source src="video.mp4" type="video/mp4">
+</video>
+
+<!-- 🎵 الصوت -->
+<audio autoplay loop id="bgSound">
+  <source src="sound.mp3" type="audio/mpeg">
+</audio>
+
+<!-- Matrix -->
 <canvas id="matrix"></canvas>
 
-<h1>💀 7rs DARK SYSTEM</h1>
+<div class="container">
+  <h1>💀 7rs DARK SYSTEM</h1>
 
-<input type="text" id="text" placeholder="النص">
-<br>
-<input type="password" id="key" placeholder="كلمة السر">
-<br>
+  <input type="text" id="text" placeholder="النص"><br>
+  <input type="password" id="key" placeholder="كلمة السر"><br>
 
-<button onclick="encrypt()">تشفير</button>
-<button onclick="decrypt()">فك التشفير</button>
+  <button onclick="encrypt()">تشفير</button>
+  <button onclick="decrypt()">فك التشفير</button>
 
-<div id="result"></div>
+  <div id="output"></div>
+</div>
 
+<!-- سكربت الصوت -->
 <script>
-// Matrix background
-const canvas = document.getElementById("matrix");
-const ctx = canvas.getContext("2d");
+document.addEventListener("click", function() {
+  document.getElementById("bgSound").muted = false;
+});
+</script>
 
-canvas.width = window.innerWidth;
+<!-- Matrix Effect -->
+<script>
+let canvas = document.getElementById("matrix");
+let ctx = canvas.getContext("2d");
+
 canvas.height = window.innerHeight;
+canvas.width = window.innerWidth;
 
-const letters = "01";
-const fontSize = 14;
-const columns = canvas.width / fontSize;
+let letters = "0101017rs";
+letters = letters.split("");
 
-const drops = [];
-for (let i = 0; i < columns; i++) {
-    drops[i] = 1;
-}
+let fontSize = 14;
+let columns = canvas.width / fontSize;
+let drops = [];
+
+for (let x = 0; x < columns; x++)
+  drops[x] = 1;
 
 function draw() {
-    ctx.fillStyle = "rgba(0,0,0,0.05)";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    ctx.fillStyle = "#00ff99";
-    ctx.font = fontSize + "px monospace";
+  ctx.fillStyle = "#00ff99";
+  ctx.font = fontSize + "px monospace";
 
-    for (let i = 0; i < drops.length; i++) {
-        const text = letters[Math.floor(Math.random() * letters.length)];
-        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+  for (let i = 0; i < drops.length; i++) {
+    let text = letters[Math.floor(Math.random() * letters.length)];
+    ctx.fillText(text, i * fontSize, drops[i] * fontSize);
 
-        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
-            drops[i] = 0;
-        }
+    if (drops[i] * fontSize > canvas.height && Math.random() > 0.975)
+      drops[i] = 0;
 
-        drops[i]++;
-    }
+    drops[i]++;
+  }
 }
 
-setInterval(draw, 33);
+setInterval(draw, 35);
+</script>
 
-// تشفير بسيط
+<!-- التشفير -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+
+<script>
 function encrypt() {
-    let text = document.getElementById("text").value;
-    let key = document.getElementById("key").value;
-
-    let result = btoa(text + key);
-    document.getElementById("result").innerText = result;
+  let text = document.getElementById("text").value;
+  let key = document.getElementById("key").value;
+  let encrypted = CryptoJS.AES.encrypt(text, key).toString();
+  document.getElementById("output").innerText = encrypted;
 }
 
 function decrypt() {
-    let text = document.getElementById("text").value;
-    let key = document.getElementById("key").value;
-
-    try {
-        let result = atob(text);
-        document.getElementById("result").innerText = result.replace(key, "");
-    } catch {
-        document.getElementById("result").innerText = "خطأ";
-    }
+  let text = document.getElementById("text").value;
+  let key = document.getElementById("key").value;
+  let decrypted = CryptoJS.AES.decrypt(text, key).toString(CryptoJS.enc.Utf8);
+  document.getElementById("output").innerText = decrypted;
 }
 </script>
 
-</body><video autoplay muted loop id="bgVideo">
-  <source src="video.mp4" type="video/mp4">
-</video>
+</body>
 </html>
