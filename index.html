@@ -3,146 +3,154 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>7rs DARK SYSTEM</title>
+<title>7rs Dark System</title>
 
 <style>
 body {
-  margin: 0;
-  background: black;
-  overflow: hidden;
-  font-family: monospace;
-  color: #00ff99;
-  text-align: center;
+    margin: 0;
+    font-family: monospace;
+    background: black;
+    color: #00ff99;
+    text-align: center;
+    overflow: hidden;
 }
 
+/* canvas للخلفية */
 canvas {
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: -1;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: -1;
 }
 
-.container {
-  margin-top: 100px;
+/* العنوان */
+h1 {
+    margin-top: 80px;
+    font-size: 32px;
+    text-shadow: 0 0 15px #00ff99;
+    animation: glow 2s infinite alternate;
 }
 
+@keyframes glow {
+    from { text-shadow: 0 0 5px #00ff99; }
+    to { text-shadow: 0 0 20px #00ff99; }
+}
+
+/* الصناديق */
 input {
-  padding: 12px;
-  width: 280px;
-  background: #000;
-  border: 1px solid #00ff99;
-  color: #ff0000;
-  margin: 5px;
+    width: 80%;
+    max-width: 400px;
+    padding: 12px;
+    margin: 10px;
+    border: 2px solid #00ff99;
+    background: transparent;
+    color: #00ff99;
+    outline: none;
+    font-size: 16px;
+    box-shadow: 0 0 10px #00ff99;
 }
 
+/* الأزرار */
 button {
-  padding: 10px 20px;
-  background: #00ff99;
-  border: none;
-  cursor: pointer;
+    padding: 12px 20px;
+    margin: 10px;
+    border: none;
+    background: #00ff99;
+    color: black;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+    box-shadow: 0 0 10px #00ff99;
 }
 
-#output {
-  margin-top: 30px;
-  min-height: 40px;
+button:hover {
+    background: black;
+    color: #00ff99;
+    border: 1px solid #00ff99;
+    box-shadow: 0 0 20px #00ff99;
+}
+
+/* النتيجة */
+#result {
+    margin-top: 20px;
+    font-size: 18px;
 }
 </style>
-
 </head>
+
 <body>
 
 <canvas id="matrix"></canvas>
 
-<div class="container">
-<<h1>💀 MY HACK SYSTEM</h1>
+<h1>💀 7rs DARK SYSTEM</h1>
 
-<input type="text" id="text"  placeholder="اكتب الرسالة"><br>
-<input type="password" id="key" placeholder="كلمة السر"><br>
+<input type="text" id="text" placeholder="النص">
+<br>
+<input type="password" id="key" placeholder="كلمة السر">
+<br>
 
 <button onclick="encrypt()">تشفير</button>
 <button onclick="decrypt()">فك التشفير</button>
 
-<div id="output"></div>
-</div>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+<div id="result"></div>
 
 <script>
-// MATRIX EFFECT
-let canvas = document.getElementById("matrix");
-let ctx = canvas.getContext("2d");
+// Matrix background
+const canvas = document.getElementById("matrix");
+const ctx = canvas.getContext("2d");
 
-canvas.height = window.innerHeight;
 canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
 
-let letters = "7rs01";
-letters = letters.split("");
+const letters = "01";
+const fontSize = 14;
+const columns = canvas.width / fontSize;
 
-let fontSize = 14;
-let columns = canvas.width / fontSize;
-let drops = [];
-
-for (let x = 0; x < columns; x++) drops[x] = 1;
+const drops = [];
+for (let i = 0; i < columns; i++) {
+    drops[i] = 1;
+}
 
 function draw() {
-  ctx.fillStyle = "rgba(0,0,0,0.05)";
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "rgba(0,0,0,0.05)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  ctx.fillStyle = "#00ff99";
-  ctx.font = fontSize + "px monospace";
+    ctx.fillStyle = "#00ff99";
+    ctx.font = fontSize + "px monospace";
 
-  for (let i = 0; i < drops.length; i++) {
-    let text = letters[Math.floor(Math.random() * letters.length)];
-    ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+    for (let i = 0; i < drops.length; i++) {
+        const text = letters[Math.floor(Math.random() * letters.length)];
+        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
 
-    if (drops[i] * fontSize > canvas.height && Math.random() > 0.975)
-      drops[i] = 0;
+        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+            drops[i] = 0;
+        }
 
-    drops[i]++;
-  }
+        drops[i]++;
+    }
 }
+
 setInterval(draw, 33);
 
-// TYPE EFFECT
-function typeEffect(text) {
-  let i = 0;
-  let output = document.getElementById("output");
-  output.innerHTML = "";
-
-  let interval = setInterval(() => {
-    if (i < text.length) {
-      output.innerHTML += text.charAt(i);
-      i++;
-    } else {
-      clearInterval(interval);
-    }
-  }, 20);
-}
-
-// ENCRYPT
+// تشفير بسيط
 function encrypt() {
-  let text = document.getElementById("text").value;
-  let key = document.getElementById("key").value;
+    let text = document.getElementById("text").value;
+    let key = document.getElementById("key").value;
 
-  if (!key) return typeEffect("❌ حط كلمة سر");
-
-  let encrypted = CryptoJS.AES.encrypt(text, key).toString();
-  typeEffect("7rs-" + encrypted);
+    let result = btoa(text + key);
+    document.getElementById("result").innerText = result;
 }
 
-// DECRYPT
 function decrypt() {
-  let text = document.getElementById("text").value.replace("7rs-", "");
-  let key = document.getElementById("key").value;
+    let text = document.getElementById("text").value;
+    let key = document.getElementById("key").value;
 
-  let bytes = CryptoJS.AES.decrypt(text, key);
-  let decrypted = bytes.toString(CryptoJS.enc.Utf8);
-
-  if (!decrypted) {
-    typeEffect("❌ فشل فك التشفير");
-  } else {
-    typeEffect(decrypted);
-  }
+    try {
+        let result = atob(text);
+        document.getElementById("result").innerText = result.replace(key, "");
+    } catch {
+        document.getElementById("result").innerText = "خطأ";
+    }
 }
 </script>
 
