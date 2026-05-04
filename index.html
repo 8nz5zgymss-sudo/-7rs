@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>7rs DARK SYSTEM</title>
+
+<style>
+body {
+  margin: 0;
+  background: black;
+  overflow: hidden;
+  font-family: monospace;
+  color: #00ff99;
+  text-align: center;
+}
+
+canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: -1;
+}
+
+.container {
+  margin-top: 100px;
+}
+
+input {
+  padding: 12px;
+  width: 280px;
+  background: #000;
+  border: 1px solid #00ff99;
+  color: #00ff99;
+  margin: 5px;
+}
+
+button {
+  padding: 10px 20px;
+  background: #00ff99;
+  border: none;
+  cursor: pointer;
+}
+
+#output {
+  margin-top: 30px;
+  min-height: 40px;
+}
+</style>
+
+</head>
+<body>
+
+<canvas id="matrix"></canvas>
+
+<div class="container">
+<h1>💀 7rs DARK SYSTEM</h1>
+
+<input type="text" id="text" placeholder="النص"><br>
+<input type="password" id="key" placeholder="كلمة السر"><br>
+
+<button onclick="encrypt()">تشفير</button>
+<button onclick="decrypt()">فك التشفير</button>
+
+<div id="output"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+
+<script>
+// MATRIX EFFECT
+let canvas = document.getElementById("matrix");
+let ctx = canvas.getContext("2d");
+
+canvas.height = window.innerHeight;
+canvas.width = window.innerWidth;
+
+let letters = "7rs01";
+letters = letters.split("");
+
+let fontSize = 14;
+let columns = canvas.width / fontSize;
+let drops = [];
+
+for (let x = 0; x < columns; x++) drops[x] = 1;
+
+function draw() {
+  ctx.fillStyle = "rgba(0,0,0,0.05)";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  ctx.fillStyle = "#00ff99";
+  ctx.font = fontSize + "px monospace";
+
+  for (let i = 0; i < drops.length; i++) {
+    let text = letters[Math.floor(Math.random() * letters.length)];
+    ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+    if (drops[i] * fontSize > canvas.height && Math.random() > 0.975)
+      drops[i] = 0;
+
+    drops[i]++;
+  }
+}
+setInterval(draw, 33);
+
+// TYPE EFFECT
+function typeEffect(text) {
+  let i = 0;
+  let output = document.getElementById("output");
+  output.innerHTML = "";
+
+  let interval = setInterval(() => {
+    if (i < text.length) {
+      output.innerHTML += text.charAt(i);
+      i++;
+    } else {
+      clearInterval(interval);
+    }
+  }, 20);
+}
+
+// ENCRYPT
+function encrypt() {
+  let text = document.getElementById("text").value;
+  let key = document.getElementById("key").value;
+
+  if (!key) return typeEffect("❌ حط كلمة سر");
+
+  let encrypted = CryptoJS.AES.encrypt(text, key).toString();
+  typeEffect("7rs-" + encrypted);
+}
+
+// DECRYPT
+function decrypt() {
+  let text = document.getElementById("text").value.replace("7rs-", "");
+  let key = document.getElementById("key").value;
+
+  let bytes = CryptoJS.AES.decrypt(text, key);
+  let decrypted = bytes.toString(CryptoJS.enc.Utf8);
+
+  if (!decrypted) {
+    typeEffect("❌ فشل فك التشفير");
+  } else {
+    typeEffect(decrypted);
+  }
+}
+</script>
+
+</body>
+</html>
